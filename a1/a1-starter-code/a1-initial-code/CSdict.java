@@ -215,10 +215,135 @@ public class CSdict {
                         }
                         break;
                     case "match":
+                        if (arguments.length != 1) {
+                            System.out.println(e901);
+                            break;
+                        }
+                        if (!socketIsConnected) {
+                            System.out.println(e903);
+                            break;
+                        }
+                        try {
+                            String command = "MATCH " + setQuery + " exact " + arguments[0];
+                           if (debugOn) {
+                               System.out.println(command);
+                           }
+                           String serverResponse = "";
+                            output.println(command);
+                            while ((serverResponse = input.readLine())!= null) {
+                                if (serverResponse.contains("552")) {
+                                    if (debugOn) {
+                                        System.out.println(serverResponse);
+                                    }
+                                    System.out.println("****No definition found****");
+                                    break;
+                                } if (serverResponse.contains("550")) {
+                                    if (debugOn) {
+                                        System.out.println(serverResponse);
+                                    }
+                                    System.out.println("****No matches found****");
+                                    break;
+                                } else {
+                                    if (serverResponse.contains("150")) {
+                                        if (debugOn) {
+                                            System.out.println("<-- " + serverResponse);
+                                        }
+                                    } else if (serverResponse.contains("151")) {
+                                        // To retrieve the dictionary name, we must remove the length of the name, 3 spaces and 3 quotation
+                                        int shortenStatus = 6 + arguments[0].length();
+                                        System.out.println("@" + serverResponse.substring(shortenStatus));
+                                    } else if (serverResponse.contains("250")) {
+                                        if (debugOn) {
+                                            System.out.println(" <-- " + serverResponse);
+                                        }
+                                        break;
+                                    } else {
+                                        System.out.println(serverResponse);
+                                    }
+                                }
+                            }
+                        } catch (Exception e) {
+                            System.out.println(e925);
+                            socket = null;
+                            input.close();
+                            output.close();
+                            socketIsConnected = false;
+                        }
                         break;
                     case "prefixmatch":
+                        if (arguments.length != 1) {
+                            System.out.println(e901);
+                            break;
+                        }
+                        if (!socketIsConnected) {
+                            System.out.println(e903);
+                            break;
+                        }
+                        try {
+                            String command = "MATCH " + setQuery + " prefix " + arguments[0];
+                           if (debugOn) {
+                               System.out.println(command);
+                           }
+                           String serverResponse = "";
+                            output.println(command);
+                            while ((serverResponse = input.readLine())!= null) {
+                                if (serverResponse.contains("552")) {
+                                    if (debugOn) {
+                                        System.out.println(serverResponse);
+                                    }
+                                    System.out.println("****No definition found****");
+                                    break;
+                                } if (serverResponse.contains("550")) {
+                                    if (debugOn) {
+                                        System.out.println(serverResponse);
+                                    }
+                                    System.out.println("****No matches found****");
+                                    break;
+                                } else {
+                                    if (serverResponse.contains("150")) {
+                                        if (debugOn) {
+                                            System.out.println("<-- " + serverResponse);
+                                        }
+                                    } else if (serverResponse.contains("151")) {
+                                        // To retrieve the dictionary name, we must remove the length of the name, 3 spaces and 3 quotation
+                                        int shortenStatus = 6 + arguments[0].length();
+                                        System.out.println("@" + serverResponse.substring(shortenStatus));
+                                    } else if (serverResponse.contains("250")) {
+                                        if (debugOn) {
+                                            System.out.println(" <-- " + serverResponse);
+                                        }
+                                        break;
+                                    } else {
+                                        System.out.println(serverResponse);
+                                    }
+                                }
+                            }
+                        } catch (Exception e) {
+                            System.out.println(e925);
+                            socket = null;
+                            input.close();
+                            output.close();
+                            socketIsConnected = false;
+                        }
                         break;
                     case "close":
+                        if (arguments.length != 0) {
+                            System.out.println(e901);
+                            break;
+                        }
+                        if (socketIsConnected) {
+                            try {
+                                socketIsConnected = false;
+                                listOfDictionary.clear();
+                            } catch (NumberFormatException e) {
+                                System.out.println(e902);
+                                break;
+                            } catch (Exception e) {
+                                System.out.println("920 Control connection failed to close");
+                            }
+                        } else {
+                            System.out.println(e903);
+                        }
                         break;
                     case "quit":
                         System.exit(0);
